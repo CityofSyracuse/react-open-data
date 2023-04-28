@@ -3,6 +3,84 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <!-- <script type="module" src="https://js.arcgis.com/calcite-components/1.2.0/calcite.esm.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/1.2.0/calcite.css" /> -->
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.26/"></script>
+    <script>
+      require(["esri/config", "esri/Map", "esri/layers/FeatureLayer", "esri/views/MapView", "esri/widgets/Legend", "esri/renderers/UniqueValueRenderer"], function(esriConfig, Map, FeatureLayer, MapView, Legend, UniqueValueRenderer) {
+
+        esriConfig.apiKey = "AAPK3850a9ec91324a028768557dfc40d4ffvcIaUta3f0VFXfQzaX-fRYTub_0wRicii4v_tCY7CXnPSWbfsb44_DLmQKj3rJHv";
+
+//        Example from Arcgis site: https://developers.arcgis.com/javascript/latest/display-a-map/#reference-the-api
+        const map = new Map({
+        basemap: "arcgis-dark-gray" // Basemap layer service   
+});
+
+        const view = new MapView({
+                  map: map,
+                  center: [-76.154480, 43.088947], // Longitude, latitude
+                  zoom: 13, // Zoom level
+                  container: "viewDiv" // Div element
+                });
+
+//      Creating a template for what information I want the pop-up to display
+        const template = {
+            title: "Name of Street: {NAME}",
+            content: "Bike Safety Rating: {Bike_Suitability_19}"
+        }
+
+      // Here we are creating a function that will allow us to pass in the unique value of the suitability of the road segment and return a corresponding color in the segmentRenderer function
+      function createLineSymbol(value, color) {
+          return {
+            "value": value,
+            "symbol": {
+              "color": color,
+              "type": "simple-line",
+            }
+          }
+        }
+
+      // Here we are creating a function that will allow ArcGIS to render the different sections of the Suitability Map in different colors according to their values.  We will pass this in to the bikeLayer in that function below.  If you want to change the colors, you can either write a different color or put in custom #hex color codes.
+      const segmentRenderer = {
+        type: "unique-value",
+        field: "Bike_Suitability_19",
+        defaultSymbol: {type: "simple-line"},
+        uniqueValueInfos: [
+            createLineSymbol("Excellent", "blue"),
+            createLineSymbol("Good", "Green"),
+            createLineSymbol("Fair", "Orange"),
+            createLineSymbol("Poor", "Red")
+        ]
+      }
+
+        //  This is where we are creating an object called bikeLayer and we are pulling in the information from the FeatureLayer server.  If you want to use different data, just swap out the url you want to use below.
+        const bikelayer = new FeatureLayer({
+          url: "https://services6.arcgis.com/bdPqSfflsdgFRVVM/arcgis/rest/services/BikeSuitability_v2/FeatureServer",
+          popupTemplate: template,
+          renderer: segmentRenderer
+        })
+        map.add(bikelayer);
+
+      // This creates a legend to show what the different colors mean
+      let legend = new Legend({
+        view: view
+      });
+
+      // This adds it to the bottom right of the screen
+      view.ui.add(legend, "bottom-right");
+      });
+
+    </script>
+    <style>
+      #viewDiv {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+}
+    </style>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
@@ -24,20 +102,102 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+    <div id="tutorial">
+      <title>Creating a Mapping Application in React.js</title>
+      <h1>Creating a Mapping Application in React.js using Open Data</h1>
+      <h2>Step 1: Set up a React App</h2>
+      <p>
+        To get started, you'll need to create a new React app using Create React App. Open a terminal and run the following command:  <br><br>
+        <code>npx create-react-app my-map-app</code>
+      </p>
+      <h2>Step 2: Sign up for Developer Credentials</h2>
+      <p>sign up for this free developer account at ArcGIS.  This allows you to get an API key that we will need to do some of our mapping functionality.  The link to sign up is: <a href = "https://developers.arcgis.com/sign-up/">https://developers.arcgis.com/sign-up/</a>
+      </p>
+      <h2>Step 3: Add ArcGIS API for JavaScript to the App</h2>
+      <p>The next step is to add the ArcGIS API for JavaScript to the app. To do this, you can use the link provided by Esri: <br>
+        <p>In a React app, you can add this to the public/index.html file inside the head tag.</p>
+        <code>"script src="https://js.arcgis.com/4.26/"</code></p>
+      <h2>Step 4: Install the needed ArcGIS classes from their Javascript Library</h2>
+      <p>Inside of the script tag, write the following: <br><br>
+        <code>
+        require(["esri/config", "esri/Map", "esri/layers/FeatureLayer", "esri/views/MapView", "esri/widgets/Legend"], <br><br>
+        function(esriConfig, Map, FeatureLayer, Legend) {
+          <br><br>
+        }</code></p>
+        <p>Then were are going to put in your API Key, inside of the above { } brackets like this  <br>
+          <code>esriConfig.apiKey = {insert Your API KeyHere};</code></p>
+          <h2>Step 5: Set basemap and create a mapView object</h2>
+        <p>Then we will write some code to create a map and assign a basemap<br>
+          <code>const map = new Map({<br>
+            basemap: "arcgis-dark-gray" // Basemap layer service<br>   
+    });</code></p>
+    <p>We are also going to create a mapView that allows us to insert the map into the HTML of the webpage.</p>
+    <code>const view = new MapView({<br>
+      map: map,<br>
+      center: [-76.154480, 43.088947], // Longitude, latitude <br>
+      zoom: 13, // Zoom level <br>
+      container: "viewDiv" // Div element <br>
+    });</code>
+    <p>For that viewDiv container, create a style tag section in your index.html file, and add the following CSS code.</p>
+    <code>
+      #viewDiv {<br>
+        position: absolute;<br>
+        top: 0;<br>
+        bottom: 0;<br>
+        left: 0;<br>
+        right: 0;<br>
+}
+    </code>
+    <p>Now when you save your files and type <code>npm start</code> in the terminal you should see a map similar to the one below</p>
+    <img src="./images/firstMap.png" alt="Map Image" width="900">
+    <h2>Step 6: Add Feature Layer Data to the Map</h2>
+    <p>Find a dataset that you would like to display in your map.  Then find the url for their feature layer server.  Include that url in the code below.<br><br>
+    <code>
+      const bikelayer = new FeatureLayer({<br>
+        url: "https://services6.arcgis.com/bdPqSfflsdgFRVVM/arcgis/rest/services/BikeSuitability_v2/FeatureServer"<br>
+      })<br>
+      map.add(bikelayer);<br>
+      const graphicsLayer = new GraphicsLayer();<br>
+      map.add(graphicsLayer);<br>
+    </code></p>
+    <p>Now the map should like like this image below.</p>
+    <img src="./images/secondMap.png" alt="Map Image" width="900">
+    <h2>Step 7: Add Pop-up Information</h2>
+    <p>Now we will add some information to display on a pop-up.  To do that we will create a template like this below.  This will be added inside of the script tags of the index.html file, after the mapview that we made earlier.<br><br>
+      <code>
+        const template = {<br>
+            title: "Name of Street: {NAME}",<br>
+            content: "Bike Safety Rating: {Bike_Suitability_19}"<br>
+        </code>}<br><br>
+      <p>Depending on the dataset you are mapping you will need to find the field names that you wish to display in your pop up.  In the <a href = "https://services6.arcgis.com/bdPqSfflsdgFRVVM/ArcGIS/rest/services/BikeSuitability_v2/FeatureServer/0">Bike Suitability feature server</a>, this information is listed under Fields, like the image below.</p>
+      <code>
+        <h4>Fields:</h4>
+        <ul>
+          <li>OBJECTID (type: esriFieldTypeOID, alias: OBJECTID, SQL Type: sqlTypeOther, length: 0, nullable: false, editable: false)</li>
+          <li><mark>NAME</mark> (type: esriFieldTypeString, alias: NAME, SQL Type: sqlTypeOther, length: 32, nullable: true, editable: true)</li>
+        <li><mark>Bike_Suitability_19</mark> (type: esriFieldTypeString, alias: Bike Suitability, SQL Type: sqlTypeOther, length: 20, nullable: true, editable: true, Coded Values: [Excellent: Excellent], [Good: Good], [Fair: Fair], ... 1 more ...)</li>
+        <li>Shape__Length (type: esriFieldTypeDouble, alias: Shape__Length, SQL Type: sqlTypeDouble, nullable: true, editable: false)</li>
+      </ul>
+      </code><br>
+      <p>Inside of the bikeLayer object that we made earlier, we are going to add the popupTemplate code here:</p><br>
+      <code>
+        const bikelayer = new FeatureLayer({<br>
+          url: "https://services6.arcgis.com/bdPqSfflsdgFRVVM/arcgis/rest/services/BikeSuitability_v2/FeatureServer",<br>
+          <mark>popupTemplate: template</mark><br>
+        })
+      </code>
+      <p>When we click on a road segment now, the map should look like the image below.</p>
+      <img src="./images/thirdMap.png" alt="Map Image" width="900">
+    <h2>Step 8: Stylize the Map</h2>
+    <p>Then maybe change colors based on a value.  See if there is any other cool functionality, then ship this puppy.</p>
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+  </div>
+    <div id="viewDiv"></div>
+    <!-- <br>
+    <div id="firstViewDiv"></div> -->
   </body>
 </html>

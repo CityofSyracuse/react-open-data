@@ -19,7 +19,7 @@
 
         const view = new MapView({
                   map: map,
-                  center: [-76.154480, 43.088947], // Longitude, latitude
+                  center: [-76.14742356689862, 43.04905858144036], // Longitude, latitude
                   zoom: 13, // Zoom level
                   container: "viewDiv" // Div element
                 });
@@ -106,98 +106,6 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <div id="tutorial">
-      <title>Creating a Mapping Application in React.js</title>
-      <h1>Creating a Mapping Application in React.js using Open Data</h1>
-      <h2>Step 1: Set up a React App</h2>
-      <p>
-        To get started, you'll need to create a new React app using Create React App. Open a terminal and run the following command:  <br><br>
-        <code>npx create-react-app my-map-app</code>
-      </p>
-      <h2>Step 2: Sign up for Developer Credentials</h2>
-      <p>sign up for this free developer account at ArcGIS.  This allows you to get an API key that we will need to do some of our mapping functionality.  The link to sign up is: <a href = "https://developers.arcgis.com/sign-up/">https://developers.arcgis.com/sign-up/</a>
-      </p>
-      <h2>Step 3: Add ArcGIS API for JavaScript to the App</h2>
-      <p>The next step is to add the ArcGIS API for JavaScript to the app. To do this, you can use the link provided by Esri: <br>
-        <p>In a React app, you can add this to the public/index.html file inside the head tag.</p>
-        <code>"script src="https://js.arcgis.com/4.26/"</code></p>
-      <h2>Step 4: Install the needed ArcGIS classes from their Javascript Library</h2>
-      <p>Inside of the script tag, write the following: <br><br>
-        <code>
-        require(["esri/config", "esri/Map", "esri/layers/FeatureLayer", "esri/views/MapView", "esri/widgets/Legend"], <br><br>
-        function(esriConfig, Map, FeatureLayer, Legend) {
-          <br><br>
-        }</code></p>
-        <p>Then were are going to put in your API Key, inside of the above { } brackets like this  <br>
-          <code>esriConfig.apiKey = {insert Your API KeyHere};</code></p>
-          <h2>Step 5: Set basemap and create a mapView object</h2>
-        <p>Then we will write some code to create a map and assign a basemap<br>
-          <code>const map = new Map({<br>
-            basemap: "arcgis-dark-gray" // Basemap layer service<br>   
-    });</code></p>
-    <p>We are also going to create a mapView that allows us to insert the map into the HTML of the webpage.</p>
-    <code>const view = new MapView({<br>
-      map: map,<br>
-      center: [-76.154480, 43.088947], // Longitude, latitude <br>
-      zoom: 13, // Zoom level <br>
-      container: "viewDiv" // Div element <br>
-    });</code>
-    <p>For that viewDiv container, create a style tag section in your index.html file, and add the following CSS code.</p>
-    <code>
-      #viewDiv {<br>
-        position: absolute;<br>
-        top: 0;<br>
-        bottom: 0;<br>
-        left: 0;<br>
-        right: 0;<br>
-}
-    </code>
-    <p>Now when you save your files and type <code>npm start</code> in the terminal you should see a map similar to the one below</p>
-    <img src="./images/firstMap.png" alt="Map Image" width="900">
-    <h2>Step 6: Add Feature Layer Data to the Map</h2>
-    <p>Find a dataset that you would like to display in your map.  Then find the url for their feature layer server.  Include that url in the code below.<br><br>
-    <code>
-      const bikelayer = new FeatureLayer({<br>
-        url: "https://services6.arcgis.com/bdPqSfflsdgFRVVM/arcgis/rest/services/BikeSuitability_v2/FeatureServer"<br>
-      })<br>
-      map.add(bikelayer);<br>
-      const graphicsLayer = new GraphicsLayer();<br>
-      map.add(graphicsLayer);<br>
-    </code></p>
-    <p>Now the map should like like this image below.</p>
-    <img src="./images/secondMap.png" alt="Map Image" width="900">
-    <h2>Step 7: Add Pop-up Information</h2>
-    <p>Now we will add some information to display on a pop-up.  To do that we will create a template like this below.  This will be added inside of the script tags of the index.html file, after the mapview that we made earlier.<br><br>
-      <code>
-        const template = {<br>
-            title: "Name of Street: {NAME}",<br>
-            content: "Bike Safety Rating: {Bike_Suitability_19}"<br>
-        </code>}<br><br>
-      <p>Depending on the dataset you are mapping you will need to find the field names that you wish to display in your pop up.  In the <a href = "https://services6.arcgis.com/bdPqSfflsdgFRVVM/ArcGIS/rest/services/BikeSuitability_v2/FeatureServer/0">Bike Suitability feature server</a>, this information is listed under Fields, like the image below.</p>
-      <code>
-        <h4>Fields:</h4>
-        <ul>
-          <li>OBJECTID (type: esriFieldTypeOID, alias: OBJECTID, SQL Type: sqlTypeOther, length: 0, nullable: false, editable: false)</li>
-          <li><mark>NAME</mark> (type: esriFieldTypeString, alias: NAME, SQL Type: sqlTypeOther, length: 32, nullable: true, editable: true)</li>
-        <li><mark>Bike_Suitability_19</mark> (type: esriFieldTypeString, alias: Bike Suitability, SQL Type: sqlTypeOther, length: 20, nullable: true, editable: true, Coded Values: [Excellent: Excellent], [Good: Good], [Fair: Fair], ... 1 more ...)</li>
-        <li>Shape__Length (type: esriFieldTypeDouble, alias: Shape__Length, SQL Type: sqlTypeDouble, nullable: true, editable: false)</li>
-      </ul>
-      </code><br>
-      <p>Inside of the bikeLayer object that we made earlier, we are going to add the popupTemplate code here:</p><br>
-      <code>
-        const bikelayer = new FeatureLayer({<br>
-          url: "https://services6.arcgis.com/bdPqSfflsdgFRVVM/arcgis/rest/services/BikeSuitability_v2/FeatureServer",<br>
-          <mark>popupTemplate: template</mark><br>
-        })
-      </code>
-      <p>When we click on a road segment now, the map should look like the image below.</p>
-      <img src="./images/thirdMap.png" alt="Map Image" width="900">
-    <h2>Step 8: Stylize the Map</h2>
-    <p>Then maybe change colors based on a value.  See if there is any other cool functionality, then ship this puppy.</p>
-
-  </div>
     <div id="viewDiv"></div>
-    <!-- <br>
-    <div id="firstViewDiv"></div> -->
   </body>
 </html>
